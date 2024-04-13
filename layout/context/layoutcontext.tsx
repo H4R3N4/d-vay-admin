@@ -1,9 +1,10 @@
 'use client';
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext,useEffect } from 'react';
 import { LayoutState, ChildContainerProps, LayoutConfig, LayoutContextProps } from '@/types';
 export const LayoutContext = createContext({} as LayoutContextProps);
 
 export const LayoutProvider = ({ children }: ChildContainerProps) => {
+    
     const [layoutConfig, setLayoutConfig] = useState<LayoutConfig>({
         ripple: false,
         inputStyle: 'outlined',
@@ -13,6 +14,7 @@ export const LayoutProvider = ({ children }: ChildContainerProps) => {
         scale: 14
     });
 
+
     const [layoutState, setLayoutState] = useState<LayoutState>({
         staticMenuDesktopInactive: false,
         overlayMenuActive: false,
@@ -21,6 +23,7 @@ export const LayoutProvider = ({ children }: ChildContainerProps) => {
         staticMenuMobileActive: false,
         menuHoverActive: false
     });
+     
 
     const onMenuToggle = () => {
         if (isOverlay()) {
