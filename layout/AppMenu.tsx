@@ -12,8 +12,25 @@ const AppMenu = () => {
 
     const model: AppMenuItem[] = [
         {
-            label: 'Home',
+            label: 'Dashboard',
             items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        },
+        {
+            label: 'Cultivation',
+            items :[{ label: 'Vignoble', icon: 'pi pi-fw pi-map', to:'/admin/cultivation/vignoble'},
+            { label: 'Récolte', icon: 'pi pi-fw pi-map', to:'/admin/cultivation/recolte'},]
+        },
+        {
+            label: 'Production',
+            items :[{ label: 'Cuve', icon: 'pi pi-fw pi-filter', to:'/admin/production/cuve'},
+                    { label: 'Vin',icon:'pi pi-fw' ,to:'/admin/production/vin'}
+                    ]
+        },
+        {
+            label: 'Vente',
+            items :[{ label: 'Commande', icon: 'pi pi-fw pi-shopping-cart', to:'/admin/vente/commande'},
+                    { label: 'Client',icon: 'pi pi-fw pi-users', to:'/admin/vente/client'}
+                    ]
         },
         {
             label: 'UI Components',
