@@ -16,7 +16,10 @@ const LoginPage = () => {
 
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
-
+    const Login = ()=>{
+        localStorage.setItem('account','Sieg')
+        router.push('/')
+    }
     return (
         <div className={containerClassName}>
             <div className="flex flex-column align-items-center justify-content-center">
@@ -54,7 +57,7 @@ const LoginPage = () => {
                                     Mot de passe oublié?
                                 </a>
                             </div>
-                            <Button label="Se connecter" className="w-full p-3 text-xl" onClick={() => router.push('/')}></Button>
+                            <Button label="Se connecter" className="w-full p-3 text-xl" onClick={Login}></Button>
                         </div>
                     </div>
                 </div>
