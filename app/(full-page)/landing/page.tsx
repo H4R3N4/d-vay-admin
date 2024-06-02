@@ -10,24 +10,28 @@ import { Divider } from 'primereact/divider';
 import { LayoutContext } from '../../../layout/context/layoutcontext';
 import { NodeRef } from '@/types';
 import { classNames } from 'primereact/utils';
+import { useRouter } from 'next/navigation';
+import { Scale } from 'chart.js';
 
 const LandingPage = () => {
     const [isHidden, setIsHidden] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
     const menuRef = useRef<HTMLElement | null>(null);
-
+    const router = useRouter();
     const toggleMenuItemClick = () => {
         setIsHidden((prevState) => !prevState);
     };
 
     return (
         <div className="surface-0 flex justify-content-center">
-            <div id="home" className="landing-wrapper overflow-hidden">
-                <div className="py-4 px-4 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center justify-content-between relative lg:static">
-                    <Link href="/" className="flex align-items-center">
-                        <img src={`/layout/images/${layoutConfig.colorScheme === 'light' ? 'logo-dark' : 'logo-white'}.svg`} alt="Sakai Logo" height="50" className="mr-0 lg:mr-2" />
-                        <span className="text-900 font-medium text-2xl line-height-3 mr-8">SAKAI</span>
-                    </Link>
+            <div id="home" className="landing-wrapper overflow">
+                <div className="py-4 px-8 mx-0 md:mx-6 lg:mx-8 lg:px-8 flex align-items-center  relative lg:static">
+            
+                <img src={`/layout/images/logo-grape.svg`} style={{ transform: 'scaleX(-1)', height: '50px', marginRight: '0'}} alt="Sakai Logo Mirror" height="50" className="mr-0 lg:mr-2" />
+                <img src={`/layout/images/logo-grape.svg`} style={{ transform: 'scaleX(1)', height: '50px' }} alt="Sakai Logo Mirror" height="50" className="mr-0 lg:mr-2" />
+
+                        <span className="text-900 font-medium text-2xl line-height-3 mr-8">DIVAY</span>
+
                     <StyleClass nodeRef={menuRef as NodeRef} selector="@next" enterClassName="hidden" leaveToClassName="hidden" hideOnOutsideClick>
                         <i ref={menuRef} className="pi pi-bars text-4xl cursor-pointer block lg:hidden text-700"></i>
                     </StyleClass>
@@ -59,7 +63,7 @@ const LandingPage = () => {
                             </li>
                         </ul>
                         <div className="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
-                            <Button label="Login" text rounded className="border-none font-light line-height-2 text-blue-500"></Button>
+                            <Button label="Login" onClick={()=>{router.push('/auth/login')}} text rounded className="border-none font-light line-height-2 text-blue-500"></Button>
                             <Button label="Register" rounded className="border-none ml-5 font-light line-height-2 bg-blue-500 text-white"></Button>
                         </div>
                     </div>
