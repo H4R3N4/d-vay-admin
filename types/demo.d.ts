@@ -173,6 +173,52 @@ declare namespace Demo {
         };
     };
 
+    // listeVin
+    type Typevin={
+        code_type?: string,
+        prix_unitaire?: number,
+        design_vin?: string,
+        description?: string,
+        img_vin:string
+    }
+    type Client={
+        email?: string,
+        nom?: string,
+        prenom?: string,
+        design_vin?: string
+    }
+
+    //commande 
+    type Contenir = {
+        code_type: string,
+        quantite: string,
+        somme_due: string,
+        type_vin: Typevin
+    }
+
+    type Commande = {
+        num_commande: number,
+        date_de_commande: string,
+        addresse_livraison: string,
+        date_paiment: string,
+        code_mode_paiment: string,
+        email: string,
+        utilisateur: Client,
+        contenir: Contenir[]
+    }
+    
+    type Vignoble={
+        nom_vignoble?: string,
+        superficie?: number,
+        adresse_vignoble?: string
+    }
+
+    type Recolte={
+        id_recolte?: number,
+        date_recolte?: string,
+        nom_vignoble?: string
+    }
+
     interface Event extends EventInput {
         location?: string;
         description?: string;

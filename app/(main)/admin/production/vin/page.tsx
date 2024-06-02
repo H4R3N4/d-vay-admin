@@ -1,10 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
-import { FileUpload } from 'primereact/fileupload';
+import { FileUpload, FileUploadSelectEvent  } from 'primereact/fileupload';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
@@ -16,6 +15,8 @@ import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
 import { ProductService } from '../../../../../demo/service/ProductService';
 import { Demo } from '@/types';
+import axios from 'axios';
+import ImgUpload_template from './imgupload';
 
 /* @todo Used 'as any' for types here. Will fix in next version due to onSelectionChange event type issue. */
 const Crud = () => {
@@ -31,11 +32,21 @@ const Crud = () => {
         inventoryStatus: 'INSTOCK'
     };
 
+    let emptyTypeVin: Demo.Typevin={
+        code_type: '',
+        prix_unitaire: 0,
+        design_vin: '',
+        description:'',
+        img_vin:''
+    }
+
     const [products, setProducts] = useState(null);
-    const [productDialog, setProductDialog] = useState(false);
+    const [listetypeVin, setListetypeVin] = useState(null);
+    const [productDialog, setProductDialog] = useState(false);  // open dialog d'ajout
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
     const [product, setProduct] = useState<Demo.Product>(emptyProduct);
+    const [typevin, setTypevin] = useState<Demo.Typevin>(emptyTypeVin);
     const [selectedProducts, setSelectedProducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [globalFilter, setGlobalFilter] = useState('');
@@ -44,6 +55,8 @@ const Crud = () => {
 
     useEffect(() => {
         ProductService.getProducts().then((data) => setProducts(data as any));
+        ProductService.getListeVin().then((data) => setListetypeVin(data as any));
+        // fetchList_Type_Vin();
     }, []);
 
     const formatCurrency = (value: number) => {
@@ -55,11 +68,13 @@ const Crud = () => {
 
     const openNew = () => {
         setProduct(emptyProduct);
+        // setListetypeVin(null);
         setSubmitted(false);
         setProductDialog(true);
     };
 
     const hideDialog = () => {
+        setTypevin(emptyTypeVin);
         setSubmitted(false);
         setProductDialog(false);
     };
@@ -72,37 +87,16 @@ const Crud = () => {
         setDeleteProductsDialog(false);
     };
 
-    const saveProduct = () => {
+    const saveProduct = async () => {
         setSubmitted(true);
-
-        if (product.name.trim()) {
-            let _products = [...(products as any)];
-            let _product = { ...product };
-            if (product.id) {
-                const index = findIndexById(product.id);
-
-                _products[index] = _product;
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Produit modifié',
-                    life: 3000
-                });
-            } else {
-                _product.id = createId();
-                _product.image = 'product-placeholder.svg';
-                _products.push(_product);
-                toast.current?.show({
-                    severity: 'success',
-                    summary: 'Successful',
-                    detail: 'Produit créé',
-                    life: 3000
-                });
-            }
-
-            setProducts(_products as any);
-            setProductDialog(false);
-            setProduct(emptyProduct);
+        try{
+            const res = await axios.post('127.0.0.1:8080/type_vin',typevin);
+            ProductService.getListeVin().then((data) => setListetypeVin(data as any));
+            console.log('produit ajouté avec succès');
+            setTypevin(emptyTypeVin);
+        }
+        catch(e){
+            console.error('error',e)
         }
     };
 
@@ -221,59 +215,32 @@ const Crud = () => {
         );
     };
 
-    const nameBodyTemplate = (rowData: Demo.Product) => {
+    //template des body du datatable
+    const code_type_template = (rowData: Demo.Typevin) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
-                {rowData.name}
+                <span className="p-column-title">Code_type</span>
+                {rowData.code_type}
+            </>
+        );
+    };
+    const designation_template = (rowData: Demo.Typevin) => {
+        return (
+            <>
+                <span className="p-column-title">Désignation</span>
+                {rowData.design_vin}
+            </>
+        );
+    };
+    const prix_template = (rowData: Demo.Typevin) => {
+        return (
+            <>
+                <span className="p-column-title">Prix</span>
+                {rowData.prix_unitaire}
             </>
         );
     };
 
-    const imageBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Image</span>
-                <img src={`/demo/images/product/${rowData.image}`} alt={rowData.image} className="shadow-2" width="100" />
-            </>
-        );
-    };
-
-    const priceBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Price</span>
-                {formatCurrency(rowData.price as number)}
-            </>
-        );
-    };
-
-    const categoryBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Category</span>
-                {rowData.category}
-            </>
-        );
-    };
-
-    const ratingBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Reviews</span>
-                <Rating value={rowData.rating} readOnly cancel={false} />
-            </>
-        );
-    };
-
-    const statusBodyTemplate = (rowData: Demo.Product) => {
-        return (
-            <>
-                <span className="p-column-title">Status</span>
-                <span className={`product-badge status-${rowData.inventoryStatus?.toLowerCase()}`}>{rowData.inventoryStatus}</span>
-            </>
-        );
-    };
 
     const actionBodyTemplate = (rowData: Demo.Product) => {
         return (
@@ -284,9 +251,17 @@ const Crud = () => {
         );
     };
 
+    const img_vin_template = (rowData: Demo.Typevin)=>{
+        return (
+            <>
+                <img className="shadow-2" src={`data:image/jpeg;base64,${rowData.img_vin}`} alt='img_vin' width="50" height='50' />
+            </>
+        )
+    }
+
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Gerer les produits</h5>
+            <h5 className="m-0">Liste des commandes possible de vin</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.currentTarget.value)} placeholder="Recherche..." />
@@ -313,6 +288,41 @@ const Crud = () => {
         </>
     );
 
+
+    const [image64selected, setImage64Selected] = useState<string | null>(null); // Explicitly defining the type as string | null
+
+    const handleFileSelect = (event: FileUploadSelectEvent) => {
+        const files = event.files;
+        const file = files[0];
+        const newTypevin = {...typevin}
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const base64String = reader.result as string;
+                newTypevin.img_vin=base64String;
+                setTypevin(newTypevin);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    const handleClearFileSelect = () => {
+        setTypevin((prevFromData)=>({
+            ...prevFromData,
+            code_type:''
+        }))
+            
+    };
+
+    const uploadOptions = { icon: 'none', iconOnly: true, className: 'hidden' };
+    const chooseOptions = { icon: 'pi pi-image', iconOnly: false,label:'Ajouter photo d\'éxposition', className: '' };
+    const cancelOptions = { icon: 'none', iconOnly: false,label:'Annuler', className: '' };
+
+    useEffect(()=>{
+        console.log('typevin::'+JSON.stringify(typevin));
+    },[typevin])
+
+
     return (
         <div className="grid crud-demo">
             <div className="col-12">
@@ -322,10 +332,10 @@ const Crud = () => {
 
                     <DataTable
                         ref={dt}
-                        value={products}
+                        value={listetypeVin}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as any)}
-                        dataKey="id"
+                        dataKey='code_type'
                         paginator
                         rows={10}
                         rowsPerPageOptions={[5, 10, 25]}
@@ -337,41 +347,74 @@ const Crud = () => {
                         header={header}
                         responsiveLayout="scroll"
                     >
-                        <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
-                        <Column field="code" header="Code" sortable body={codeBodyTemplate} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="désignation" header="Désignation" sortable body={nameBodyTemplate} headerStyle={{ minWidth: '15rem' }}></Column>
-                        <Column field="prix" header="Prix" body={priceBodyTemplate} sortable></Column>
-                        <Column field="quantité" header="Quantité" sortable body={priceBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column field="inventoryStatus" header="Status" body={statusBodyTemplate} sortable headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column selectionMode="multiple" headerStyle={{ width: '2rem' }}></Column>
+                        <Column header="Image" body={img_vin_template} />
+                        <Column field="code_type" header="code_type" sortable  headerStyle={{ minWidth: '6rem' }}></Column>
+                        <Column field="design_vin" header="Désignation" sortable headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="prix_unitaire" header="Prix" align='right' sortable headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column field="description" header="Déscription" sortable headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
                     </DataTable>
 
-                    <Dialog visible={productDialog} style={{ width: '450px' }} header="Detail du produit" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        {product.image && <img src={`/demo/images/product/${product.image}`} alt={product.image} width="150" className="mt-0 mx-auto mb-5 block shadow-2" />}
+                    <Dialog visible={productDialog} style={{ width: '750px' }} position='top' header="Detail du produit" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+                        {/* {product.image && <img src={`/demo/images/product/${product.image}`} alt={product.image} width="150" className="mt-0 mx-auto mb-5 block shadow-2" />} */}
                         <div className="field">
-                            <label htmlFor="name">Code </label>
+                            <label htmlFor="codetype">Code type vin:</label>
                             <InputText
-                                id="name"
-                                value={product.name}
-                                onChange={(e) => onInputChange(e, 'name')}
+                                id="code_type"
+                                //value={typevin.code_type}
+                                onChange={(e) => {
+                                    const{ value } = e.target;
+                                        setTypevin((prevFromData)=>({
+                                            ...prevFromData,
+                                            code_type:value
+                                        }))
+                                    }
+                                }
                                 required
                                 autoFocus
                                 className={classNames({
                                     'p-invalid': submitted && !product.name
                                 })}
                             />
-                            {submitted && !product.name && <small className="p-invalid">Code est requis.</small>}
+                            {submitted && !typevin.code_type && <small className="p-invalid">Code est requis.</small>}
                         </div>
                         <div className="field">
-                            <label htmlFor="name">Désignation</label>
+                            <label htmlFor="design_vin">Désignation:</label>
                             <InputText
                                 id="name"
-                                value={product.name}
-                                onChange={(e) => onInputChange(e, 'name')}
+                                //value={typevin.design_vin}
+                                onChange={(e) => {
+                                    const{ value } = e.target;
+                                        setTypevin((prevFromData)=>({
+                                            ...prevFromData,
+                                            design_vin:value
+                                        }))
+                                    }
+                                }
                                 required
-                                autoFocus
                                 className={classNames({
                                     'p-invalid': submitted && !product.name
+                                })}
+                            />
+                            {submitted && !typevin.design_vin && <small className="p-invalid">Désignation est requis.</small>}
+                        </div>
+                        <div className="field">
+                            <label htmlFor="description">Déscription:</label>
+                            <InputText
+                                id="description"
+                                //value={typevin.design_vin}
+                                onChange={(e) => {
+                                    const{ value } = e.target;
+                                        setTypevin((prevFromData)=>({
+                                            ...prevFromData,
+                                            description:value
+                                        }))
+                                    }
+                                }
+                                required
+                                className={classNames({
+                                    'p-invalid': submitted && !typevin.description
                                 })}
                             />
                             {submitted && !product.name && <small className="p-invalid">Désignation est requis.</small>}
@@ -380,10 +423,39 @@ const Crud = () => {
 
                         <div className="formgrid grid">
                             <div className="field col">
-                                <label htmlFor="price">Prix par littre</label>
-                                <InputNumber id="price" value={product.price} onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="USD" locale="en-US" />
+                                <label htmlFor="prix_unitaire">Prix unitaire:</label>
+                                <InputNumber
+                                    id="prix_unitaire"
+                                    value={typevin.prix_unitaire}
+                                    onValueChange={(e)=>{
+                                        setTypevin((prevFromData)=>({
+                                            ...prevFromData,
+                                            prix_unitaire:e.value
+                                        }))
+                                    }}  
+                                    mode="currency"
+                                    currency="MGA"
+                                    // locale="en-US"
+                                />
+                                {submitted && !typevin.design_vin && <small className="p-invalid">Désignation est requis.</small>}
                             </div>
                         </div>
+                        
+                    <div className="card">
+                        <FileUpload 
+                            maxFileSize={1000000} 
+                            onSelect={handleFileSelect}
+                            onClear={handleClearFileSelect}
+                            emptyTemplate={<p className="m-0">Glisser et déposer ici</p>}
+                            uploadOptions={uploadOptions}
+                            cancelOptions={cancelOptions}
+                            chooseOptions={chooseOptions}
+                            mode='advanced'
+                        />
+                        {image64selected && (
+                            <img src={image64selected} alt="Selected" />
+                        )}      
+                    </div>
                     </Dialog>
 
                     <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmation" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>

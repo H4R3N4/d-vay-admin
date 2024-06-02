@@ -1,0 +1,19 @@
+{
+    "typesVin": [
+        {
+            "code_type": "ROUGE",
+            "prix_unitaire": 20000,
+            "design_vin": "Vin Rouge"
+        },
+        {
+            "code_type": "BLANC",
+            "prix_unitaire": 18000,
+            "design_vin": "Vin Blanc"
+        },
+        {
+            "code_type": "ROSE",
+            "prix_unitaire": 15000,
+            "design_vin": "Vin Rosé"
+        }
+    ]
+}
