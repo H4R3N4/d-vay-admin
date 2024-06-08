@@ -90,9 +90,15 @@ const Crud = () => {
     const saveProduct = async () => {
         setSubmitted(true);
         try{
-            const res = await axios.post('127.0.0.1:8080/type_vin',typevin);
+            const res = await axios.post('http://localhost:8080/Type_vin/add',typevin);
             ProductService.getListeVin().then((data) => setListetypeVin(data as any));
-            console.log('produit ajouté avec succès');
+            setProductDialog(false)
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Successful',
+                detail: 'Vin ajouté avec succès',
+                life: 3000
+            });
             setTypevin(emptyTypeVin);
         }
         catch(e){
@@ -105,22 +111,28 @@ const Crud = () => {
         setProductDialog(true);
     };
 
-    const confirmDeleteProduct = (product: Demo.Product) => {
-        setProduct(product);
+    const [idSupp,setIdSupp]=useState('')
+
+    const confirmDeleteProduct = (codetype:string) => {
+        setIdSupp(codetype);
         setDeleteProductDialog(true);
     };
 
-    const deleteProduct = () => {
+    const deleteProduct = async () => {
         let _products = (products as any)?.filter((val: any) => val.id !== product.id);
-        setProducts(_products);
-        setDeleteProductDialog(false);
-        setProduct(emptyProduct);
-        toast.current?.show({
-            severity: 'success',
-            summary: 'Successful',
-            detail: 'Produit supprimé',
-            life: 3000
-        });
+        // setProducts(_products);
+        const res = await axios.delete(`http://localhost:8080/Type_vin/delete/${idSupp}`);
+            ProductService.getListeVin().then((data) => setListetypeVin(data as any));
+            //setProductDialog(false)
+            setDeleteProductDialog(false);
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Successful',
+                detail: res.data.succes,
+                life: 3000
+            });
+            //setTypevin(emptyTypeVin);
+        //setProduct(emptyProduct);
     };
 
     const findIndexById = (id: string) => {
@@ -246,7 +258,7 @@ const Crud = () => {
         return (
             <>
                 <Button icon="pi pi-pencil" rounded severity="success" className="mr-2" onClick={() => editProduct(rowData)} />
-                <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteProduct(rowData)} />
+                <Button icon="pi pi-trash" rounded severity="warning" onClick={() => confirmDeleteProduct(rowData.code_type)  }/>
             </>
         );
     };
@@ -277,8 +289,8 @@ const Crud = () => {
     );
     const deleteProductDialogFooter = (
         <>
-            <Button label="Non" icon="pi pi-times" text onClick={hideDeleteProductDialog} />
-            <Button label="Oui" icon="pi pi-check" text onClick={deleteProduct} />
+            <Button label="Non" icon="pi pi-times" severity='secondary' text onClick={hideDeleteProductDialog} />
+            <Button label="Oui" icon="pi pi-check" severity='success' text onClick={deleteProduct} />
         </>
     );
     const deleteProductsDialogFooter = (
@@ -300,7 +312,8 @@ const Crud = () => {
             const reader = new FileReader();
             reader.onload = () => {
                 const base64String = reader.result as string;
-                newTypevin.img_vin=base64String;
+                const imagebrute = base64String.split(',');
+                newTypevin.img_vin=imagebrute[1];
                 setTypevin(newTypevin);
             };
             reader.readAsDataURL(file);
@@ -327,7 +340,7 @@ const Crud = () => {
         <div className="grid crud-demo">
             <div className="col-12">
                 <div className="card">
-                    <Toast ref={toast} />
+                    <Toast ref={toast} position='top-center'/>
                     <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
 
                     <DataTable
@@ -460,10 +473,10 @@ const Crud = () => {
 
                     <Dialog visible={deleteProductDialog} style={{ width: '450px' }} header="Confirmation" modal footer={deleteProductDialogFooter} onHide={hideDeleteProductDialog}>
                         <div className="flex align-items-center justify-content-center">
-                            <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                            <i className="pi pi-exclamation-triangle mr-3" style={{ color:'red' , fontSize: '2rem' }} />
                             {product && (
-                                <span>
-                                    Etes-vous sûr que vous voulez supprimer<b>{product.name}</b>?
+                                <span style={{color:'red'}}>
+                                    Etes-vous sûr que vous voulez le vin : <b>{idSupp}</b>?
                                 </span>
                             )}
                         </div>
