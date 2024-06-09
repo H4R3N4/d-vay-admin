@@ -8,18 +8,53 @@ import { Password } from 'primereact/password';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
+import Cookies from 'js-cookie';
 
 const LoginPage = () => {
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState();
+    const [password, setPassword] = useState();
+    const [error, setError] = useState();
     const [checked, setChecked] = useState(false);
     const { layoutConfig } = useContext(LayoutContext);
 
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
-    const Login = ()=>{
-        localStorage.setItem('account','Sieg')
-        router.push('/')
-    }
+    const Login = async () => {
+    
+        
+        const credentials = {
+            email: email,
+            password: password
+        };
+    
+        try {
+            // Appel de l'API pour l'authentification
+            const response = await fetch('http://localhost:8080/utilisateur/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(credentials)
+            });
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('account', data.Utilisateur.email);
+                Cookies.set('token',data.token)
+                console.log(data.token);
+                
+                router.push('/admin/dashboard');
+            } else {
+                const errorData = await response.json();
+                console.error('Erreur de connexion:', errorData.message);
+                setError('Échec de la connexion. Veuillez vérifier vos identifiants.')
+            }
+        } catch (error) {
+            console.error('Erreur réseau:', error);
+            setError('Une erreur réseau est survenue. Veuillez réessayer plus tard.')
+        }
+    };
+    
     return (
         <div className={containerClassName}>
             <div className="flex flex-column align-items-center justify-content-center">
@@ -41,7 +76,7 @@ const LoginPage = () => {
                             <label htmlFor="email1" className="block text-900 text-xl font-medium mb-2">
                                 Email
                             </label>
-                            <InputText id="email1" type="text" placeholder="Email address" className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
+                            <InputText id="email1" type="text" onChange={(e) => setEmail(e.target.value)} placeholder="Email address" className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />
 
                             <label htmlFor="password1" className="block text-900 font-medium text-xl mb-2">
                                 Mot de passe
@@ -57,7 +92,10 @@ const LoginPage = () => {
                                     Mot de passe oublié?
                                 </a>
                             </div>
-                            <Button label="Se connecter" className="w-full p-3 text-xl" onClick={Login}></Button>
+                            <div style={{color:'red',marginLeft:'80px'}}>
+                                    <p>{error}</p>
+                            </div>
+                            <Button style={{marginTop:'20px'}} label="Se connecter" className="w-full p-3 text-xl" onClick={Login}></Button>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
 import { Column } from 'primereact/column';
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
@@ -10,7 +11,6 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton, RadioButtonChangeEvent } from 'primereact/radiobutton';
 import { Rating } from 'primereact/rating';
-import { Toast } from 'primereact/toast';
 import { Toolbar } from 'primereact/toolbar';
 import { classNames } from 'primereact/utils';
 import React, { useEffect, useRef, useState } from 'react';
@@ -209,9 +209,7 @@ const Crud = () => {
         return (
             <React.Fragment>
                 <div className="my-2">
-                    <Button label="Ajouter" icon="pi pi-plus" severity="success" className=" mr-2" onClick={openNew} />
-                    <Button label="Supprimer" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !(selectedProducts as any).length} />
-                </div>
+                 </div>
             </React.Fragment>
         );
     };
@@ -310,7 +308,7 @@ const Crud = () => {
                         value={listeClient}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as any)}
-                        dataKey="id"
+                        dataKey='email'
                         paginator
                         rows={10}
                         rowsPerPageOptions={[5, 10, 25]}

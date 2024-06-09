@@ -38,7 +38,16 @@ export const ProductService = {
             return [];
         }
     },
-    
+    async getListeCuve(): Promise<Demo.Cuve[]> {
+        try {
+            const response: AxiosResponse = await axios.get('http://localhost:8080/Cuve/');
+            console.log(response.data.cuves)
+            return response.data.cuves as Demo.Cuve[];
+        } catch (error) {
+            console.error('Erreur lors de la récupération de la liste des cuves:', error);
+            return [];
+        }
+    },
     async getListeVignoble(): Promise<Demo.Vignoble[]> {
         try {
             const response: AxiosResponse = await axios.get('http://localhost:8080/Vignoble');

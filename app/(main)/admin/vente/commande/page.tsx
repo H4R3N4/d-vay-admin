@@ -224,7 +224,6 @@ const Crud = () => {
         return (
             <React.Fragment>
                 <div className="my-2">
-                    <Button label="Ajouter" icon="pi pi-plus" severity="success" className=" mr-2" onClick={openNew} />
                     <Button label="Supprimer" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !(selectedProducts as any).length} />
                 </div>
             </React.Fragment>
@@ -282,6 +281,22 @@ const Crud = () => {
             </>
         );
     };
+    const date_de_commande_template = (rowData: Demo.Commande) =>{
+        const date =new Date(rowData.date_de_commande)
+        return (
+            <>
+                {date.toLocaleDateString('fr-FR', {
+                        timeZone: 'UTC',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'})}
+            </>
+        );
+
+    }
     const qte_template_contenir = (rowData: Demo.Contenir) => {
         return (
             <>
@@ -306,6 +321,18 @@ const Crud = () => {
             </>
         );
     };
+    const date_commande_template = (date: Date) => {
+        const date_commande =new Date(date)
+        return date_commande.toLocaleDateString('fr-FR', {
+                        timeZone: 'UTC',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'})}
+
+
     const nomPrenomClient = (rowData: Demo.Commande)=>{
         return (
             <>
@@ -368,7 +395,7 @@ const Crud = () => {
                         value={listeCommande}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as any)}
-                        dataKey="id"
+                        dataKey='num_commande'
                         paginator
                         rows={10}
                         rowsPerPageOptions={[5, 10, 25]}
@@ -382,7 +409,7 @@ const Crud = () => {
                     >
                         <Column selectionMode="multiple" headerStyle={{ width: '4rem' }}></Column>
                         <Column field="num_commande" header="N°commande" sortable  headerStyle={{ minWidth: '10rem' }}></Column>
-                        <Column field="date_de_commande" header="Du" sortable  headerStyle={{ minWidth: '10rem' }}></Column>
+                        <Column body={date_de_commande_template} header="Du" sortable  headerStyle={{ minWidth: '10rem' }}></Column>
                         <Column body={nomPrenomClient} sortable header="Client" headerStyle={{ minWidth: '12rem' }}></Column>
                         <Column field="email" header="Email" sortable headerStyle={{ minWidth: '15rem' }}></Column>
                         <Column body={actionBodyTemplate} headerStyle={{ minWidth: '10rem' }}></Column>
@@ -391,7 +418,7 @@ const Crud = () => {
 
                     <Dialog visible={productDialog} position='top' style={{ width: '900px' }} header="Detail de la commande" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
                         <span>N° Commande: </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{commande.num_commande.toString()}</span>
-                        <span>Du </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{commande.date_de_commande.toString()}</span><br />
+                        <span>Du </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{date_commande_template(commande.date_de_commande)}</span><br />
                         <span>Client: </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{commande.utilisateur.nom+" "+commande.utilisateur.prenom}</span>
                         <span>Email: </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{commande.email}</span><br />
                         <br /><p>Liste des commandes</p>

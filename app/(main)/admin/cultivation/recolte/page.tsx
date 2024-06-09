@@ -141,6 +141,8 @@ const Crud = () => {
         });
     };
 
+    
+
     const findIndexById = (id: string) => {
         let index = -1;
         for (let i = 0; i < (products as any)?.length; i++) {
@@ -243,10 +245,18 @@ const Crud = () => {
         );
     };
     const date_recolte_template = (rowData: Demo.Recolte) => {
+        const dateRecolte =new Date(rowData.date_recolte)
         return (
             <>
                 <span className="p-column-title">Récolté le</span>
-                {rowData.date_recolte}
+                {dateRecolte.toLocaleDateString('fr-FR', {
+                        timeZone: 'UTC',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'})}
             </>
         );
     };
@@ -364,7 +374,7 @@ const Crud = () => {
                         value={listeRecolte}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as any)}
-                        dataKey="id"
+                        dataKey='id_recolte'
                         paginator
                         rows={10}
                         rowsPerPageOptions={[5, 10, 25]}

@@ -206,6 +206,17 @@ declare namespace Demo {
         utilisateur: Client,
         contenir: Contenir[]
     }
+
+    type Cuve = {
+        numero_cuve: number,
+        quantite_vin: string,
+        capacite_cuve: string,
+        code_type: string,
+        id_recolte: number,
+        dateDebut: string,
+        dateFin: string,
+        description: string
+    }
     
     type Vignoble={
         nom_vignoble?: string,

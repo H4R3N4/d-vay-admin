@@ -372,7 +372,7 @@ const Crud = () => {
                         value={listeVignoble}
                         selection={selectedProducts}
                         onSelectionChange={(e) => setSelectedProducts(e.value as any)}
-                        dataKey="id"
+                        dataKey='nom_vignoble'
                         paginator
                         rows={10}
                         rowsPerPageOptions={[5, 10, 25]}

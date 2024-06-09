@@ -5,7 +5,7 @@ import React, { useContext, useState } from 'react';
 import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
-import { LayoutContext } from '../../layout/context/layoutcontext';
+import { LayoutContext } from './layout/context/layoutcontext';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import Cookies from 'js-cookie';
@@ -20,7 +20,7 @@ const LoginPage = () => {
     const router = useRouter();
     const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
     const Login = async () => {
-
+    
         
         const credentials = {
             email: email,
