@@ -19,6 +19,8 @@ import { Demo } from '@/types';
 import axios from 'axios';
 import { TreeTable } from 'primereact/treetable';
 
+import './commande.css'
+
 /* @todo Used 'as any' for types here. Will fix in next version due to onSelectionChange event type issue. */
 const Crud = () => {
     let emptyProduct: Demo.Product = {
@@ -417,11 +419,30 @@ const Crud = () => {
 
 
                     <Dialog visible={productDialog} position='top' style={{ width: '900px' }} header="Detail de la commande" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
-                        <span>N° Commande: </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{commande.num_commande.toString()}</span>
-                        <span>Du </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{date_commande_template(commande.date_de_commande)}</span><br />
-                        <span>Client: </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{commande.utilisateur.nom+" "+commande.utilisateur.prenom}</span>
-                        <span>Email: </span> <span style={{fontWeight:'bold', textDecoration:'underline'}} >{commande.email}</span><br />
-                        <br /><p>Liste des commandes</p>
+                        <div>
+                            <div style={{display:'flex',justifyContent:'space-around'}}>
+                                <div>
+                                    <span className='info-label'>Client: </span> 
+                                    <span className='info-value' >{commande.utilisateur.nom+" "+commande.utilisateur.prenom}</span><br />    
+                                </div>
+                                <div>
+                                    <span className='info-label'>Email: </span>
+                                    <span className='info-value'>{commande.email}</span><br />
+                                </div>
+                            </div>
+                            <div style={{display:'flex',justifyContent:'space-around'}}>
+                                <div>
+                                    <span className='info-label'>N° Commande: </span>
+                                    <span className='info-value' >{commande.num_commande.toString()}</span><br />
+                                </div>
+                                <div>
+                                    <span className='info-label'>Du </span> 
+                                    <span className='info-value' >{date_commande_template(commande.date_de_commande)}</span><br />
+                                </div>
+                            </div>
+                        <br />
+                        </div>
+                        <p>Liste des commandes</p>
                         <DataTable value={commande.contenir} footer={footerTableContenir("Net à payer")}>
                             <Column field='code_type' header='Type'/>
                             <Column body={designation_template_contenir} header='Désignation'/>
